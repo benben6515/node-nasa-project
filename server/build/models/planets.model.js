@@ -1,33 +1,33 @@
-import fs from "fs";
+import fs from 'fs';
 import path from 'path';
-import { parse } from "csv-parse";
+import { parse } from 'csv-parse';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const habitablePlanets = [];
 function isHabitablePlanet(planet) {
-    return (planet["koi_disposition"] === "CONFIRMED" &&
-        planet["koi_insol"] > 0.36 &&
-        planet["koi_insol"] < 1.11 &&
-        planet["koi_prad"] < 1.6);
+    return (planet['koi_disposition'] === 'CONFIRMED' &&
+        planet['koi_insol'] > 0.36 &&
+        planet['koi_insol'] < 1.11 &&
+        planet['koi_prad'] < 1.6);
 }
 function loadPlanetsData() {
     return new Promise((resolve, reject) => {
-        fs.createReadStream(path.join(__dirname, "..", "data", "kepler_data.csv"))
+        fs.createReadStream(path.join(__dirname, '..', 'data', 'kepler_data.csv'))
             .pipe(parse({
-            comment: "#",
+            comment: '#',
             columns: true,
         }))
-            .on("data", (data) => {
+            .on('data', (data) => {
             if (isHabitablePlanet(data)) {
                 habitablePlanets.push(data);
             }
         })
-            .on("error", (err) => {
+            .on('error', (err) => {
             console.error(err);
             reject(err);
         })
-            .on("end", () => {
+            .on('end', () => {
             resolve(habitablePlanets);
         });
     });

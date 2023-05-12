@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon build/server.js",
-    "start": "PORT=5004 node --experimental-specifier-resolution=node build/server.js",
+    "start": "PORT=5004 node build/server.js",
     "build": "tsc && cp -r ./src/data ./build/data"
   },
   "keywords": [],
