@@ -1,9 +1,10 @@
 import { Router } from 'express'
 
-import { getAllLaunches } from './launches.controller.js'
+import { httpAddNesLaunch, httpGetAllLaunches } from './launches.controller.js'
 
 const launchRouter = Router()
 
-launchRouter.get('/launches', getAllLaunches)
+launchRouter.get('/', httpGetAllLaunches)
+launchRouter.post('/', httpAddNesLaunch)
 
 export default launchRouter

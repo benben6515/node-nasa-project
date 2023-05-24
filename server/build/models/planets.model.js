@@ -32,7 +32,9 @@ function loadPlanetsData() {
         });
     });
 }
+export function getAllPlanets() {
+    return habitablePlanets;
+}
 export default {
     loadPlanetsData,
-    planets: habitablePlanets,
 };
