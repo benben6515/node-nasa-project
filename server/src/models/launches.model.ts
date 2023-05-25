@@ -35,7 +35,10 @@ export function existsLaunchWithId(launchId: number | string) {
 }
 
 export function abortLaunchById(launchId: number | string) {
-  launches.delete(+launchId)
+  const aborted = launches.get(+launchId)
+  aborted.upcoming = false
+  aborted.success = false
+  return aborted
 }
 
 export function addNewLaunch(launch: Launch) {
