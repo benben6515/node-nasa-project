@@ -30,3 +30,5 @@ app.get('/*', (req, res) => {
 })
 
 export default app
+
+// web browser <--- http ---> web application <--- http ---> node api <--- excel data <--- row data

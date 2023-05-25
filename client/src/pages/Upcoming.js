@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { 
+import {
   withStyles,
   Appear,
   Link,
@@ -18,7 +18,7 @@ const styles = () => ({
 });
 
 const Upcoming = props => {
-  const { 
+  const {
     entered,
     launches,
     classes,

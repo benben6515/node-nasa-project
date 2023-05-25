@@ -3,7 +3,7 @@ type Launch = {
   mission: string
   rocket: string
   launchDate: Date
-  destination: string
+  target: string
   customers: string[]
   upcoming: boolean
   success: boolean
@@ -18,7 +18,7 @@ const launch: Launch = {
   mission: 'Kepler Exploration',
   rocket: 'Explore IS1',
   launchDate: new Date('2030/12/27'),
-  destination: '',
+  target: '',
   customers: ['ZTM', 'NASA'],
   upcoming: true,
   success: true,
@@ -26,16 +26,22 @@ const launch: Launch = {
 
 launches.set(launch.flightNumber, launch)
 
-function getAllLaunches() {
+export function getAllLaunches() {
   return Array.from(launches.values())
 }
 
-function addNewLaunch(launch: Launch) {
+export function existsLaunchWithId(launchId: number | string) {
+  return launches.has(+launchId)
+}
+
+export function abortLaunchById(launchId: number | string) {
+  launches.delete(+launchId)
+}
+
+export function addNewLaunch(launch: Launch) {
   latestFlightNumber++
   launches.set(
     latestFlightNumber,
     Object.assign(launch, { customers: ['Hello'], success: true, upcoming: true, flightNumber: latestFlightNumber }),
   )
 }
-
-export { getAllLaunches, addNewLaunch }

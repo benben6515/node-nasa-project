@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getAllLaunches, addNewLaunch } from '../../models/launches.model.js'
+import { getAllLaunches, addNewLaunch, existsLaunchWithId, abortLaunchById } from '../../models/launches.model.js'
 
 export function httpGetAllLaunches(req: Request, res: Response) {
   return res.status(200).json(getAllLaunches())
@@ -21,4 +21,17 @@ export async function httpAddNesLaunch(req: Request, res: Response) {
   }
   await addNewLaunch(launch)
   return res.status(201).json(launch)
+}
+
+export async function httpAbortLaunch(req: Request, res: Response) {
+  const launchId = req.params.id
+
+  if (!existsLaunchWithId(launchId)) {
+    return res.status(404).json({
+      error: 'Launch not found',
+    })
+  }
+
+  const aborted = abortLaunchById(launchId)
+  return res.status(200).json(aborted)
 }
