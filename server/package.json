@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test-watch": "jest --watch",
     "watch": "nodemon build/server.js",
     "start": "PORT=5004 node build/server.js",
     "build": "tsc && cp -r ./src/data ./build/data"
@@ -18,14 +19,20 @@
     "csv-parse": "^5.3.6",
     "express": "^4.18.2",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.22",
-    "typescript": "^5.0.4"
+    "nodemon": "^2.0.22"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.21.5",
     "@types/cors": "^2.8.13",
     "@types/csv-parse": "^1.2.2",
     "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.1",
     "@types/morgan": "^1.9.4",
-    "@types/node": "^18.15.11"
+    "@types/node": "^18.15.11",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
   }
 }
