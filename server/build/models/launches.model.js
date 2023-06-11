@@ -18,7 +18,10 @@ export function existsLaunchWithId(launchId) {
     return launches.has(+launchId);
 }
 export function abortLaunchById(launchId) {
-    launches.delete(+launchId);
+    const aborted = launches.get(+launchId);
+    aborted.upcoming = false;
+    aborted.success = false;
+    return aborted;
 }
 export function addNewLaunch(launch) {
     latestFlightNumber++;

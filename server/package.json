@@ -9,7 +9,8 @@
     "test-watch": "jest --watch",
     "watch": "nodemon build/server.js",
     "start": "PORT=5004 node build/server.js",
-    "build": "tsc && cp -r ./src/data ./build/data"
+    "build": "tsc && cp -r ./src/data ./build/data",
+    "cluster": "pm2 start build/server.js -i max"
   },
   "keywords": [],
   "author": "",

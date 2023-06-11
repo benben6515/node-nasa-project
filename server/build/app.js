@@ -22,3 +22,4 @@ app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 export default app;
+// web browser <--- http ---> web application <--- http ---> node api <--- excel data <--- row data
