@@ -11,7 +11,6 @@ const MONGO_URL = process.env.MONGO_URL
 
 async function main() {
   if (!MONGO_URL) throw new Error('No mongo url!')
-  console.log(MONGO_URL)
 
   mongoose.connection
     .once('open', () => console.log('MongoDB connection ready'))

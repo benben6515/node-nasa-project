@@ -19,13 +19,13 @@ async function httpSubmitLaunch(launch) {
     return await fetch(`${baseUrl}/launches`, {
       method: 'POST',
       headers: {
-        "Content-Type": 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(launch),
     })
   } catch (error) {
     return {
-      ok: false
+      ok: false,
     }
   }
 }
@@ -38,14 +38,9 @@ async function httpAbortLaunch(id) {
     })
   } catch (error) {
     return {
-      ok: false
+      ok: false,
     }
   }
 }
 
-export {
-  httpGetPlanets,
-  httpGetLaunches,
-  httpSubmitLaunch,
-  httpAbortLaunch,
-};
+export { httpGetPlanets, httpGetLaunches, httpSubmitLaunch, httpAbortLaunch }

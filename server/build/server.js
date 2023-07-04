@@ -9,13 +9,6 @@ const MONGO_URL = process.env.MONGO_URL;
 async function main() {
     if (!MONGO_URL)
         throw new Error('No mongo url!');
-    console.log(MONGO_URL);
-    const options = {
-        useNewUrlParser: true,
-        useFindAndModify: false,
-        useCreateIndex: true,
-        useUnifiedTopology: true,
-    };
     mongoose.connection
         .once('open', () => console.log('MongoDB connection ready'))
         .on('error', () => {
@@ -23,7 +16,16 @@ async function main() {
             console.error(err);
         });
     });
-    await mongoose.connect(MONGO_URL, {});
+    // for old mongoose
+    // const options = {
+    //   useNewUrlParser: true,
+    //   useFindAndModify: false,
+    //   useCreateIndex: true,
+    //   useUnifiedTopology: true,
+    // }
+    await mongoose.connect(MONGO_URL, {
+    /* options */
+    });
     const server = http.createServer(app);
     await planetsModel.loadPlanetsData();
     server.listen(PORT, async () => {

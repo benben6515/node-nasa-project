@@ -2,6 +2,7 @@ import fs from 'fs'
 import { parse } from 'csv-parse'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { planets } from './planets.mongo.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -12,8 +13,6 @@ interface Planet {
   koi_insol: number
   koi_prad: number
 }
-
-const habitablePlanets: Planet[] = []
 
 function isHabitablePlanet(planet: Planet) {
   return (
@@ -33,23 +32,43 @@ function loadPlanetsData() {
           columns: true,
         }),
       )
-      .on('data', (data: Planet) => {
+      .on('data', async (data: Planet) => {
         if (isHabitablePlanet(data)) {
-          habitablePlanets.push(data)
+          savePlanet(data)
         }
       })
       .on('error', (err: Error) => {
         console.error(err)
         reject(err)
       })
-      .on('end', () => {
-        resolve(habitablePlanets)
+      .on('end', async () => {
+        const countPlanetsFound = (await getAllPlanets()).length
+        console.log(`${countPlanetsFound} habitable planets found`)
+        resolve(true)
       })
   })
 }
 
-export function getAllPlanets() {
-  return habitablePlanets
+export async function getAllPlanets() {
+  return await planets.find({})
+}
+
+async function savePlanet(planet: Planet) {
+  try {
+    await planets.updateOne(
+      {
+        keplerName: planet.kepler_name,
+      },
+      {
+        keplerName: planet.kepler_name,
+      },
+      {
+        upsert: true,
+      },
+    )
+  } catch (err) {
+    console.error(`Could not save planet ${err}`)
+  }
 }
 
 export default {
