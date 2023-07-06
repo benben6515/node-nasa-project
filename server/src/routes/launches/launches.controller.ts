@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 import { getAllLaunches, addNewLaunch, existsLaunchWithId, abortLaunchById } from '../../models/launches.model.js'
 
-export function httpGetAllLaunches(req: Request, res: Response) {
-  return res.status(200).json(getAllLaunches())
+export async function httpGetAllLaunches(req: Request, res: Response) {
+  return res.status(200).json(await getAllLaunches())
 }
 
 export async function httpAddNesLaunch(req: Request, res: Response) {

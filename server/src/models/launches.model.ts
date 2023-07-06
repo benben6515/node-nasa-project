@@ -1,4 +1,5 @@
-// import launches from './launches.mongo'
+import { launches as launchesDatabase } from './launches.mongo.js'
+import { planets } from './planets.mongo.js'
 
 type Launch = {
   flightNumber: number
@@ -13,7 +14,7 @@ type Launch = {
 
 const launches = new Map()
 
-let latestFlightNumber = 100
+const DEFAULT_FLIGHT_NUMBER = 100
 
 const launch: Launch = {
   flightNumber: 100,
@@ -28,8 +29,15 @@ const launch: Launch = {
 
 launches.set(launch.flightNumber, launch)
 
-export function getAllLaunches() {
-  return Array.from(launches.values())
+export async function getAllLaunches() {
+  return await launchesDatabase.find(
+    {},
+    {
+      _id: 0,
+      __v: 0,
+    },
+  )
+  // return Array.from(launches.values())
 }
 
 export function existsLaunchWithId(launchId: number | string) {
@@ -43,10 +51,38 @@ export function abortLaunchById(launchId: number | string) {
   return aborted
 }
 
-export function addNewLaunch(launch: Launch) {
-  latestFlightNumber++
-  launches.set(
-    latestFlightNumber,
-    Object.assign(launch, { customers: ['Hello'], success: true, upcoming: true, flightNumber: latestFlightNumber }),
+export async function saveLaunch(launch: Launch) {
+  const planet = await planets.findOne({
+    keplerName: launch.target,
+  })
+
+  if (!planet) {
+    throw new Error('No matching planet found!')
+  }
+
+  await launchesDatabase.updateOne(
+    {
+      flightNumber: launch.flightNumber,
+    },
+    launch,
+    {
+      upsert: true,
+    },
   )
+}
+
+export async function addNewLaunch(launch: Launch) {
+  const flightNumber = (await getLatestFlightNumber()) + 1
+  launches.set(
+    flightNumber,
+    Object.assign(launch, { customers: ['Hello'], success: true, upcoming: true, flightNumber }),
+  )
+}
+
+async function getLatestFlightNumber() {
+  const latestLaunch = await launchesDatabase.findOne().sort('-flightNumber')
+
+  if (!latestLaunch) return DEFAULT_FLIGHT_NUMBER
+
+  return latestLaunch?.flightNumber
 }
