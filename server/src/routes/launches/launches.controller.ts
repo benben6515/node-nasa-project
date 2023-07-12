@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getAllLaunches, addNewLaunch, existsLaunchWithId, abortLaunchById } from '../../models/launches.model.js'
+import { getAllLaunches, scheduleNewLaunch, existsLaunchWithId, abortLaunchById } from '../../models/launches.model.js'
 
 export async function httpGetAllLaunches(req: Request, res: Response) {
   return res.status(200).json(await getAllLaunches())
@@ -19,19 +19,30 @@ export async function httpAddNesLaunch(req: Request, res: Response) {
       error: 'Invalid launch date',
     })
   }
-  await addNewLaunch(launch)
+  await scheduleNewLaunch(launch)
   return res.status(201).json(launch)
 }
 
 export async function httpAbortLaunch(req: Request, res: Response) {
   const launchId = req.params.id
 
-  if (!existsLaunchWithId(launchId)) {
+  const existsLaunch = await existsLaunchWithId(launchId)
+
+  if (!existsLaunch) {
     return res.status(404).json({
       error: 'Launch not found',
     })
   }
 
   const aborted = abortLaunchById(launchId)
-  return res.status(200).json(aborted)
+  if (!aborted) {
+    return res.status(400).json({
+      error: 'Launch not aborted',
+    })
+  }
+
+  return res.status(200).json({
+    ok: true,
+    data: aborted,
+  })
 }

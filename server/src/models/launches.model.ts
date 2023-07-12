@@ -1,5 +1,6 @@
 import { launches as launchesDatabase } from './launches.mongo.js'
 import { planets } from './planets.mongo.js'
+import type { UpdateWriteOpResult } from 'mongoose'
 
 type Launch = {
   flightNumber: number
@@ -40,15 +41,23 @@ export async function getAllLaunches() {
   // return Array.from(launches.values())
 }
 
-export function existsLaunchWithId(launchId: number | string) {
-  return launches.has(+launchId)
+export async function existsLaunchWithId(launchId: number | string) {
+  return await launchesDatabase.findOne({
+    flightNumber: launchId,
+  })
 }
 
-export function abortLaunchById(launchId: number | string) {
-  const aborted = launches.get(+launchId)
-  aborted.upcoming = false
-  aborted.success = false
-  return aborted
+export async function abortLaunchById(launchId: number | string) {
+  const aborted = await launchesDatabase.updateOne(
+    {
+      filghtNumber: launchId,
+    },
+    {
+      upcoming: false,
+      success: false,
+    },
+  )
+  return aborted.modifiedCount === 1
 }
 
 export async function saveLaunch(launch: Launch) {
@@ -60,7 +69,7 @@ export async function saveLaunch(launch: Launch) {
     throw new Error('No matching planet found!')
   }
 
-  await launchesDatabase.updateOne(
+  await launchesDatabase.findOneAndUpdate(
     {
       flightNumber: launch.flightNumber,
     },
@@ -71,12 +80,15 @@ export async function saveLaunch(launch: Launch) {
   )
 }
 
-export async function addNewLaunch(launch: Launch) {
-  const flightNumber = (await getLatestFlightNumber()) + 1
-  launches.set(
-    flightNumber,
-    Object.assign(launch, { customers: ['Hello'], success: true, upcoming: true, flightNumber }),
-  )
+export async function scheduleNewLaunch(launch: Launch) {
+  const newFlightNumber = (await getLatestFlightNumber()) + 1
+  const newLaunch = Object.assign(launch, {
+    success: true,
+    upcoming: true,
+    costomer: ['Zero to Mastery', 'NASA'],
+    filghtNumber: newFlightNumber,
+  })
+  await saveLaunch(newLaunch)
 }
 
 async function getLatestFlightNumber() {
