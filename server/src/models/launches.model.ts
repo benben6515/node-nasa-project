@@ -1,6 +1,6 @@
 import { launches as launchesDatabase } from './launches.mongo.js'
 import { planets } from './planets.mongo.js'
-import type { UpdateWriteOpResult } from 'mongoose'
+import type { UpdateWriteOpResult, UpdatedResult } from 'mongoose'
 
 type Launch = {
   flightNumber: number
@@ -13,7 +13,7 @@ type Launch = {
   success: boolean
 }
 
-const launches = new Map()
+// const launches = new Map()
 
 const DEFAULT_FLIGHT_NUMBER = 100
 
@@ -28,7 +28,7 @@ const launch: Launch = {
   success: true,
 }
 
-launches.set(launch.flightNumber, launch)
+// launches.set(launch.flightNumber, launch)
 
 export async function getAllLaunches() {
   return await launchesDatabase.find(
@@ -47,8 +47,11 @@ export async function existsLaunchWithId(launchId: number | string) {
   })
 }
 
+type Aborted = {
+  nMOdified: number
+}
 export async function abortLaunchById(launchId: number | string) {
-  const aborted = await launchesDatabase.updateOne(
+  const aborted: UpdatedResult<Aborted> = await launchesDatabase.updateOne(
     {
       filghtNumber: launchId,
     },
@@ -57,7 +60,7 @@ export async function abortLaunchById(launchId: number | string) {
       success: false,
     },
   )
-  return aborted.modifiedCount === 1
+  return aborted.nModified === 1
 }
 
 export async function saveLaunch(launch: Launch) {
@@ -93,8 +96,6 @@ export async function scheduleNewLaunch(launch: Launch) {
 
 async function getLatestFlightNumber() {
   const latestLaunch = await launchesDatabase.findOne().sort('-flightNumber')
-
   if (!latestLaunch) return DEFAULT_FLIGHT_NUMBER
-
-  return latestLaunch?.flightNumber
+  return latestLaunch.flightNumber
 }

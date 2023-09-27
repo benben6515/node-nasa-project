@@ -1,6 +1,6 @@
-import { getAllLaunches, addNewLaunch, existsLaunchWithId, abortLaunchById } from '../../models/launches.model.js';
-export function httpGetAllLaunches(req, res) {
-    return res.status(200).json(getAllLaunches());
+import { getAllLaunches, scheduleNewLaunch, existsLaunchWithId, abortLaunchById } from '../../models/launches.model.js';
+export async function httpGetAllLaunches(req, res) {
+    return res.status(200).json(await getAllLaunches());
 }
 export async function httpAddNesLaunch(req, res) {
     const launch = req.body;
@@ -15,16 +15,25 @@ export async function httpAddNesLaunch(req, res) {
             error: 'Invalid launch date',
         });
     }
-    await addNewLaunch(launch);
+    await scheduleNewLaunch(launch);
     return res.status(201).json(launch);
 }
 export async function httpAbortLaunch(req, res) {
     const launchId = req.params.id;
-    if (!existsLaunchWithId(launchId)) {
+    const existsLaunch = await existsLaunchWithId(launchId);
+    if (!existsLaunch) {
         return res.status(404).json({
             error: 'Launch not found',
         });
     }
     const aborted = abortLaunchById(launchId);
-    return res.status(200).json(aborted);
+    if (!aborted) {
+        return res.status(400).json({
+            error: 'Launch not aborted',
+        });
+    }
+    return res.status(200).json({
+        ok: true,
+        data: aborted,
+    });
 }
